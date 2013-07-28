@@ -49,8 +49,6 @@ PRODUCT_PACKAGES += \
     libpower \
     libstdc++ \
     libstlport \
-    libsurfaceflinger \
-    libsurfaceflinger_ddmconnection \
     libsysutils \
     libui \
     libutils \
@@ -61,10 +59,7 @@ PRODUCT_PACKAGES += \
     reboot \
     service \
     servicemanager \
-    sh \
-    surfaceflinger \
-    toolbox \
-    libsigchain
+    toolbox
 
 # SELinux packages
 PRODUCT_PACKAGES += \

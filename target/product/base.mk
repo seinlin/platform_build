@@ -21,7 +21,6 @@ PRODUCT_PACKAGES += \
     am \
     android.policy \
     android.test.runner \
-    app_process \
     applypatch \
     blkid \
     bmgr \
@@ -36,10 +35,7 @@ PRODUCT_PACKAGES += \
     ime \
     input \
     javax.obex \
-    libandroid \
-    libandroid_runtime \
-    libandroid_servers \
-    libaudioeffect_jni \
+    libSR_AudioIn \
     libaudioflinger \
     libbundlewrapper \
     libcamera_client \
@@ -50,10 +46,8 @@ PRODUCT_PACKAGES += \
     libinput \
     libiprouteutil \
     libjni_latinime \
-    libjnigraphics \
     libldnhncr \
     libmedia \
-    libmedia_jni \
     libmediaplayerservice \
     libmtp \
     libnetlink \
@@ -62,11 +56,9 @@ PRODUCT_PACKAGES += \
     libreference-ril \
     libreverbwrapper \
     libril \
-    librtp_jni \
     libsensorservice \
     libskia \
     libsonivox \
-    libsoundpool \
     libsqlite \
     libstagefright \
     libstagefright_amrnb_common \
@@ -75,6 +67,7 @@ PRODUCT_PACKAGES += \
     libstagefright_foundation \
     libstagefright_omx \
     libstagefright_yuv \
+    libsuspend \
     libusbhost \
     libutils \
     libvisualizer \
