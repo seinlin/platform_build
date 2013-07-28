@@ -23,7 +23,6 @@ PRODUCT_PACKAGES += \
     am \
     android.policy \
     android.test.runner \
-    app_process \
     applypatch \
     blkid \
     bmgr \
@@ -38,10 +37,7 @@ PRODUCT_PACKAGES += \
     ime \
     input \
     javax.obex \
-    libandroid \
-    libandroid_runtime \
-    libandroid_servers \
-    libaudioeffect_jni \
+    libSR_AudioIn \
     libaudioflinger \
     libaudiopolicyservice \
     libaudiopolicymanager \
@@ -58,7 +54,6 @@ PRODUCT_PACKAGES += \
     libjnigraphics \
     libldnhncr \
     libmedia \
-    libmedia_jni \
     libmediaplayerservice \
     libmtp \
     libnetd_client \
@@ -68,13 +63,15 @@ PRODUCT_PACKAGES += \
     libreference-ril \
     libreverbwrapper \
     libril \
-    librtp_jni \
     libsensorservice \
     libskia \
     libsonivox \
+<<<<<<< HEAD
     libsoundpool \
     libsoundtrigger \
     libsoundtriggerservice \
+=======
+>>>>>>> Support building B2G on JB MR2
     libsqlite \
     libstagefright \
     libstagefright_amrnb_common \
@@ -83,6 +80,7 @@ PRODUCT_PACKAGES += \
     libstagefright_foundation \
     libstagefright_omx \
     libstagefright_yuv \
+    libsuspend \
     libusbhost \
     libutils \
     libvisualizer \
