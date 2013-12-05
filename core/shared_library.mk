@@ -20,6 +20,9 @@ ifneq ($(strip $(LOCAL_MODULE_STEM)$(LOCAL_BUILT_MODULE_STEM)),)
 $(error $(LOCAL_PATH): Cannot set module stem for a library)
 endif
 
+# Todo kitkat : to avoid unused warning error
+LOCAL_CFLAGS += -Wno-unused-parameter
+
 $(call target-shared-library-hook)
 
 skip_build_from_source :=

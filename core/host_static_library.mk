@@ -18,6 +18,9 @@ $(error $(LOCAL_PATH): Cannot set module stem for a library)
 endif
 LOCAL_UNINSTALLABLE_MODULE := true
 
+# Todo kitkat : to avoid unused warning error
+LOCAL_CFLAGS += -Wno-unused-parameter
+
 LOCAL_IS_HOST_MODULE := true
 
 include $(BUILD_SYSTEM)/binary.mk
