@@ -37,17 +37,19 @@ PRODUCT_PACKAGES += \
     libbundlewrapper \
     libcamera_client \
     libcameraservice \
-    libchromium_net \
     libdl \
-    libdrm1 \
+    libeffectproxy \
     libeffects \
+    libinput \
     libiprouteutil \
     libjni_latinime \
+    libldnhncr \
     libmedia \
     libmediaplayerservice \
     libmtp \
     libnetlink \
     libnetutils \
+    libpac \
     libreference-ril \
     libreverbwrapper \
     libril \
@@ -77,6 +79,7 @@ PRODUCT_PACKAGES += \
     netcfg \
     netd \
     ping \
+    ping6 \
     platform.xml \
     pppd \
     pm \
