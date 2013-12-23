@@ -187,14 +187,15 @@ ifeq ($(strip $(LOCAL_ADDRESS_SANITIZER)),true)
   my_static_libraries += $(ADDRESS_SANITIZER_CONFIG_EXTRA_STATIC_LIBRARIES)
 endif
 
-ifeq ($(strip $($(LOCAL_2ND_ARCH_VAR_PREFIX)WITHOUT_$(my_prefix)CLANG)),true)
-  my_clang :=
-endif
+# WITHOUT_CLANG is always true for B2G build.
+# ifeq ($(strip $($(LOCAL_2ND_ARCH_VAR_PREFIX)WITHOUT_$(my_prefix)CLANG)),true)
+LOCAL_CLANG :=
+# endif
 
 # Add in libcompiler_rt for all regular device builds
-ifeq (,$(LOCAL_SDK_VERSION)$(LOCAL_IS_HOST_MODULE)$(WITHOUT_LIBCOMPILER_RT))
-  my_static_libraries += $(COMPILER_RT_CONFIG_EXTRA_STATIC_LIBRARIES)
-endif
+#ifeq (,$(LOCAL_SDK_VERSION)$(LOCAL_IS_HOST_MODULE)$(WITHOUT_LIBCOMPILER_RT))
+#  LOCAL_STATIC_LIBRARIES += $(COMPILER_RT_CONFIG_EXTRA_STATIC_LIBRARIES)
+#endif
 
 ####################################################
 ## Add FDO flags if FDO is turned on and supported
