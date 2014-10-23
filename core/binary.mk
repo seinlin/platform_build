@@ -187,12 +187,12 @@ endif
 
 # WITHOUT_CLANG is always true for B2G build.
 # ifeq ($(strip $($(LOCAL_2ND_ARCH_VAR_PREFIX)WITHOUT_$(my_prefix)CLANG)),true)
-LOCAL_CLANG :=
+  my_clang :=
 # endif
 
 # Add in libcompiler_rt for all regular device builds
 #ifeq (,$(LOCAL_SDK_VERSION)$(LOCAL_IS_HOST_MODULE)$(WITHOUT_LIBCOMPILER_RT))
-#  LOCAL_STATIC_LIBRARIES += $(COMPILER_RT_CONFIG_EXTRA_STATIC_LIBRARIES)
+#  my_static_libraries += $(COMPILER_RT_CONFIG_EXTRA_STATIC_LIBRARIES)
 #endif
 
 ####################################################
