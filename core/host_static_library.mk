@@ -28,6 +28,7 @@ OVERRIDE_BUILT_MODULE_PATH :=
 LOCAL_BUILT_MODULE :=
 LOCAL_INSTALLED_MODULE :=
 LOCAL_INTERMEDIATE_TARGETS :=
+LOCAL_CFLAGS += -flax-vector-conversions
 
 include $(BUILD_SYSTEM)/host_static_library_internal.mk
 endif

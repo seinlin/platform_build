@@ -35,7 +35,6 @@ PRODUCT_PACKAGES += \
     ime \
     input \
     javax.obex \
-    libSR_AudioIn \
     libaudioflinger \
     libbundlewrapper \
     libcamera_client \
@@ -45,7 +44,6 @@ PRODUCT_PACKAGES += \
     libeffects \
     libinput \
     libiprouteutil \
-    libjni_latinime \
     libldnhncr \
     libmedia \
     libmediaplayerservice \

@@ -49,7 +49,8 @@ else
       module_installed_filename := \
           $(patsubst $(PRODUCT_OUT)%,%,$($(my_prefix)OUT_JAVA_LIBRARIES))/$(module_leaf)
     else
-      $(error Cannot determine where to install NOTICE file for $(LOCAL_MODULE))
+#FIXME
+#$(error Cannot determine where to install NOTICE file for $(LOCAL_MODULE))
     endif # JAVA_LIBRARIES
   endif # STATIC_LIBRARIES
 endif
