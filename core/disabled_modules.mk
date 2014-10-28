@@ -11,5 +11,23 @@ DISABLED_USER_MODULES := \
 	libstagefright_chromium_http \
 	libjavacore \
 	app_process__asan \
+	app_process \
 	xaplay \
+	backtrace_test \
+	interrupter \
+	binderAddInts \
+	libandroidfw \
+	libandroid_runtime \
+	InputDispatcher_test \
+	libinputservice \
+	InputReader_test \
+	bootanimation \
+	idmap \
 
+#libbacktrace
+#libutils \
+#validatekeymaps
+#libinput \
+#libbinder \
+#validate_framework_keymaps \
+#libnativehelper \

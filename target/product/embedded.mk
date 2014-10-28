@@ -63,7 +63,9 @@ PRODUCT_PACKAGES += \
     reboot \
     service \
     servicemanager \
-    toolbox
+    sh \
+    toolbox \
+    libsigchain
 
 # SELinux packages
 PRODUCT_PACKAGES += \

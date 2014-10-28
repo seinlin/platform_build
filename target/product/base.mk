@@ -37,7 +37,6 @@ PRODUCT_PACKAGES += \
     ime \
     input \
     javax.obex \
-    libSR_AudioIn \
     libaudioflinger \
     libaudiopolicyservice \
     libaudiopolicymanager \
@@ -51,7 +50,6 @@ PRODUCT_PACKAGES += \
     libinput \
     libinputflinger \
     libiprouteutil \
-    libjnigraphics \
     libldnhncr \
     libmedia \
     libmediaplayerservice \
@@ -66,12 +64,9 @@ PRODUCT_PACKAGES += \
     libsensorservice \
     libskia \
     libsonivox \
-<<<<<<< HEAD
     libsoundpool \
     libsoundtrigger \
     libsoundtriggerservice \
-=======
->>>>>>> Support building B2G on JB MR2
     libsqlite \
     libstagefright \
     libstagefright_amrnb_common \
