@@ -23,6 +23,7 @@ DISABLED_USER_MODULES := \
 	InputReader_test \
 	bootanimation \
 	idmap \
+  libc_malloc_debug_leak \
 
 #libbacktrace
 #libutils \
