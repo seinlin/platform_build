@@ -6,8 +6,8 @@ WITHOUT_TARGET_CLANG := true
 WITHOUT_HOST_CLANG := true
 endif
 
-LLVM_PREBUILTS_VERSION := 3.5
-LLVM_PREBUILTS_PATH := prebuilts/clang/$(BUILD_OS)-x86/host/$(LLVM_PREBUILTS_VERSION)/bin
+LLVM_PREBUILTS_PATH := prebuilts/clang/$(BUILD_OS)-x86/host/3.5/bin
+LLVM_PREBUILTS_HEADER_PATH := prebuilts/clang/$(BUILD_OS)-x86/host/3.5/lib/clang/3.5/include/
 
 CLANG := $(LLVM_PREBUILTS_PATH)/clang$(BUILD_EXECUTABLE_SUFFIX)
 CLANG_CXX := $(LLVM_PREBUILTS_PATH)/clang++$(BUILD_EXECUTABLE_SUFFIX)
@@ -17,6 +17,17 @@ LLVM_LINK := $(LLVM_PREBUILTS_PATH)/llvm-link$(BUILD_EXECUTABLE_SUFFIX)
 CLANG_TBLGEN := $(BUILD_OUT_EXECUTABLES)/clang-tblgen$(BUILD_EXECUTABLE_SUFFIX)
 LLVM_TBLGEN := $(BUILD_OUT_EXECUTABLES)/llvm-tblgen$(BUILD_EXECUTABLE_SUFFIX)
 
+# The C/C++ compiler can be wrapped by setting the CC/CXX_WRAPPER vars.
+ifdef CC_WRAPPER
+  ifneq ($(CC_WRAPPER),$(firstword $(CLANG)))
+    CLANG := $(CC_WRAPPER) $(CLANG)
+  endif
+endif
+ifdef CXX_WRAPPER
+  ifneq ($(CXX_WRAPPER),$(firstword $(CLANG_CXX)))
+    CLANG_CXX := $(CXX_WRAPPER) $(CLANG_CXX)
+  endif
+endif
 
 # Clang flags for all host or target rules
 CLANG_CONFIG_EXTRA_ASFLAGS :=
@@ -32,19 +43,16 @@ CLANG_CONFIG_EXTRA_CFLAGS += \
   -Werror=int-conversion
 
 CLANG_CONFIG_UNKNOWN_CFLAGS := \
-  -finline-limit=64 \
-  -fno-canonical-system-headers \
-  -fno-tree-sra \
   -funswitch-loops \
-  -Wmaybe-uninitialized \
-  -Wno-error=maybe-uninitialized \
-  -Wno-literal-suffix \
-  -Wno-maybe-uninitialized \
-  -Wno-old-style-declaration \
+  -fno-tree-sra \
+  -finline-limit=64 \
   -Wno-psabi \
   -Wno-unused-but-set-variable \
   -Wno-unused-but-set-parameter \
-  -Wno-unused-local-typedefs
+  -Wmaybe-uninitialized \
+  -Wno-maybe-uninitialized \
+  -Wno-error=maybe-uninitialized \
+  -fno-canonical-system-headers
 
 # Clang flags for all host rules
 CLANG_CONFIG_HOST_EXTRA_ASFLAGS :=
@@ -77,6 +85,11 @@ ifdef TARGET_2ND_ARCH
 clang_2nd_arch_prefix := $(TARGET_2ND_ARCH_VAR_PREFIX)
 include $(BUILD_SYSTEM)/clang/TARGET_$(TARGET_2ND_ARCH).mk
 endif
+
+
+# Clang compiler-specific libc headers
+CLANG_CONFIG_EXTRA_HOST_C_INCLUDES := $(LLVM_PREBUILTS_HEADER_PATH)
+CLANG_CONFIG_EXTRA_TARGET_C_INCLUDES := $(LLVM_PREBUILTS_HEADER_PATH) $(TARGET_OUT_HEADERS)/clang
 
 # Address sanitizer clang config
 ADDRESS_SANITIZER_RUNTIME_LIBRARY := libclang_rt.asan_$(TARGET_ARCH)_android

@@ -621,12 +621,8 @@ class SignApk {
             this.type = new ASN1ObjectIdentifier(CMSObjectIdentifiers.data.getId());
         }
 
-        /**
-         * This should actually return byte[] or something similar, but nothing
-         * actually checks it currently.
-         */
         public Object getContent() {
-            return this;
+            throw new UnsupportedOperationException();
         }
 
         public ASN1ObjectIdentifier getContentType() {

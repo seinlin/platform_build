@@ -42,12 +42,35 @@
 #define HAVE_PTHREADS
 
 /*
+ * Do we have pthread_setname_np()?
+ *
+ * (HAVE_PTHREAD_SETNAME_NP is used by WebKit to enable a function with
+ * the same name but different parameters, so we can't use that here.)
+ */
+#define HAVE_ANDROID_PTHREAD_SETNAME_NP
+
+/*
+ * Do we have the futex syscall?
+ */
+#define HAVE_FUTEX
+
+/*
  * Process creation model.  Choose one:
  *
  * HAVE_FORKEXEC - use fork() and exec()
  * HAVE_WIN32_PROC - use CreateProcess()
  */
 #define HAVE_FORKEXEC
+
+/*
+ * IPC model.  Choose one:
+ *
+ * HAVE_SYSV_IPC - use the classic SysV IPC mechanisms (semget, shmget).
+ * HAVE_MACOSX_IPC - use Macintosh IPC mechanisms (sem_open, mmap).
+ * HAVE_WIN32_IPC - use Win32 IPC (CreateSemaphore, CreateFileMapping).
+ * HAVE_ANDROID_IPC - use Android versions (?, mmap).
+ */
+#define HAVE_ANDROID_IPC
 
 /*
  * Memory-mapping model. Choose one:
@@ -61,6 +84,11 @@
  * Define this if you have <termio.h>
  */
 #define  HAVE_TERMIO_H 1
+
+/*
+ * Define this if you have <sys/sendfile.h>
+ */
+#define  HAVE_SYS_SENDFILE_H 1
 
 /*
  * Define this if you build against MSVCRT.DLL
@@ -79,9 +107,34 @@
 #define HAVE_SYMLINKS
 
 /*
+ * Define this if we have localtime_r().
+ */
+/* #define HAVE_LOCALTIME_R 1 */
+
+/*
+ * Define this if we have gethostbyname_r().
+ */
+/* #define HAVE_GETHOSTBYNAME_R */
+
+/*
+ * Define this if we have ioctl().
+ */
+#define HAVE_IOCTL
+
+/*
+ * Define this if we want to use WinSock.
+ */
+/* #define HAVE_WINSOCK */
+
+/*
  * Define this if have clock_gettime() and friends
  */
 #define HAVE_POSIX_CLOCKS
+
+/*
+ * Define this if we have linux style epoll()
+ */
+#define HAVE_EPOLL
 
 /*
  * Endianness of the target machine.  Choose one:
@@ -94,11 +147,35 @@
 #define HAVE_LITTLE_ENDIAN
 
 /*
+ * We need to choose between 32-bit and 64-bit off_t.  All of our code should
+ * agree on the same size.  For desktop systems, use 64-bit values,
+ * because some of our libraries (e.g. wxWidgets) expect to be built that way.
+ */
+/* #define _FILE_OFFSET_BITS 64 */
+/* #define _LARGEFILE_SOURCE 1 */
+
+/*
+ * Define if platform has off64_t (and lseek64 and other xxx64 functions)
+ */
+#define HAVE_OFF64_T
+
+/*
  * Defined if we have the backtrace() call for retrieving a stack trace.
  * Needed for CallStack to operate; if not defined, CallStack is
  * non-functional.
  */
 #define HAVE_BACKTRACE 0
+
+/*
+ * Defined if we have the cxxabi.h header for demangling C++ symbols.  If
+ * not defined, stack crawls will be displayed with raw mangled symbols
+ */
+#define HAVE_CXXABI 0
+
+/*
+ * Defined if we have the gettid() system call.
+ */
+#define HAVE_GETTID
 
 /* 
  * Defined if we have the sched_setscheduler() call
@@ -153,14 +230,30 @@
 #define HAVE_LIBC_SYSTEM_PROPERTIES 1
 
 /*
+ * Define if system provides a system property server (should be
+ * mutually exclusive with HAVE_LIBC_SYSTEM_PROPERTIES).
+ */
+/* #define HAVE_SYSTEM_PROPERTY_SERVER */
+
+/*
  * What CPU architecture does this platform use?
  */
 #define ARCH_ARM
 
 /*
+ * Define if the size of enums is as short as possible,
+ */
+/* #define HAVE_SHORT_ENUMS */
+
+/*
  * sprintf() format string for shared library naming.
  */
 #define OS_SHARED_LIB_FORMAT_STR    "lib%s.so"
+
+/*
+ * type for the third argument to mincore().
+ */
+#define MINCORE_POINTER_TYPE unsigned char *
 
 /*
  * The default path separator for the platform
@@ -181,6 +274,11 @@
  * Define if the strlcpy() function exists on the system.
  */
 #define HAVE_STRLCPY 1
+
+/*
+ * Define if the open_memstream() function exists on the system.
+ */
+/* #define HAVE_OPEN_MEMSTREAM 1 */
 
 /*
  * Define if the BSD funopen() function exists on the system.
@@ -226,5 +324,15 @@
  * Define if printf() supports %zd for size_t arguments
  */
 #define HAVE_PRINTF_ZD 1
+
+/*
+ * Define to 1 if <stdlib.h> provides qsort_r() with a BSD style function prototype.
+ */
+#define HAVE_BSD_QSORT_R 0
+
+/*
+ * Define to 1 if <stdlib.h> provides qsort_r() with a GNU style function prototype.
+ */
+#define HAVE_GNU_QSORT_R 0
 
 #endif /* _ANDROID_CONFIG_H */

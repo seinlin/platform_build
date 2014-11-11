@@ -19,15 +19,9 @@ CLANG_CONFIG_arm_UNKNOWN_CFLAGS := \
   -fgcse-after-reload \
   -frerun-cse-after-loop \
   -frename-registers \
-  -fno-align-jumps \
   -fno-builtin-sin \
-  -fno-caller-saves \
-  -fno-early-inlining \
-  -fno-move-loop-invariants \
-  -fno-partial-inlining \
   -fno-strict-volatile-bitfields \
-  -fno-tree-copy-prop \
-  -fno-tree-loop-optimize \
+  -fno-align-jumps \
   -Wa,--noexecstack
 
 define subst-clang-incompatible-arm-flags

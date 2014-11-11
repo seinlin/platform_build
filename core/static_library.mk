@@ -6,8 +6,6 @@ ifndef my_module_multilib
 my_module_multilib := both
 endif
 
-LOCAL_CFLAGS += -flax-vector-conversions
-
 LOCAL_2ND_ARCH_VAR_PREFIX :=
 include $(BUILD_SYSTEM)/module_arch_supported.mk
 

@@ -34,4 +34,5 @@ PRODUCT_COPY_FILES := \
 PRODUCT_PACKAGES := \
     audio.primary.goldfish \
     power.goldfish \
-    vibrator.goldfish
+    vibrator.goldfish \
+    libffi

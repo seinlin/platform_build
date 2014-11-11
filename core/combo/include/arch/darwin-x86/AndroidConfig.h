@@ -42,12 +42,28 @@
 #define HAVE_PTHREADS
 
 /*
+ * Do we have the futex syscall?
+ */
+
+/* #define HAVE_FUTEX */
+
+/*
  * Process creation model.  Choose one:
  *
  * HAVE_FORKEXEC - use fork() and exec()
  * HAVE_WIN32_PROC - use CreateProcess()
  */
 #define HAVE_FORKEXEC
+
+/*
+ * IPC model.  Choose one:
+ *
+ * HAVE_SYSV_IPC - use the classic SysV IPC mechanisms (semget, shmget).
+ * HAVE_MACOSX_IPC - use Macintosh IPC mechanisms (sem_open, mmap).
+ * HAVE_WIN32_IPC - use Win32 IPC (CreateSemaphore, CreateFileMapping).
+ * HAVE_ANDROID_IPC - use Android versions (?, mmap).
+ */
+#define HAVE_MACOSX_IPC
 
 /*
  * Memory-mapping model. Choose one:
@@ -61,6 +77,11 @@
  * Define this if you have <termio.h>
  */
 #define  HAVE_TERMIO_H
+
+/*
+ * Define this if you have <sys/sendfile.h>
+ */
+/* #define  HAVE_SYS_SENDFILE_H 1 */
 
 /*
  * Define this if you build against MSVCRT.DLL
@@ -84,6 +105,26 @@
 #define HAVE_LOCALTIME_R 1
 
 /*
+ * Define this if we have gethostbyname_r().
+ */
+/* #define HAVE_GETHOSTBYNAME_R */
+
+/*
+ * Define this if we have ioctl().
+ */
+/* #define HAVE_IOCTL */
+
+/*
+ * Define this if we want to use WinSock.
+ */
+/* #define HAVE_WINSOCK */
+
+/*
+ * Define this if have clock_gettime() and friends
+ */
+/* #define HAVE_POSIX_CLOCKS */
+
+/*
  * Endianness of the target machine.  Choose one:
  *
  * HAVE_ENDIAN_H -- have endian.h header we can include.
@@ -105,11 +146,28 @@
 #define _LARGEFILE_SOURCE 1
 
 /*
+ * Define if platform has off64_t (and lseek64 and other xxx64 functions)
+ */
+/* #define HAVE_OFF64_T */
+
+/*
  * Defined if we have the backtrace() call for retrieving a stack trace.
  * Needed for CallStack to operate; if not defined, CallStack is
  * non-functional.
  */
 #define HAVE_BACKTRACE 0
+
+/*
+ * Defined if we have the cxxabi.h header for demangling C++ symbols.  If
+ * not defined, stack crawls will be displayed with raw mangled symbols
+ */
+#define HAVE_CXXABI 0
+
+/*
+ * Defined if we have the gettid() system call.
+ */
+/* #define HAVE_GETTID */
+
 
 /*
  * Add any extra platform-specific defines here.
@@ -156,6 +214,11 @@
 #define OS_SHARED_LIB_FORMAT_STR    "lib%s.dylib"
 
 /*
+ * type for the third argument to mincore().
+ */
+#define MINCORE_POINTER_TYPE char *
+
+/*
  * The default path separator for the platform
  */
 #define OS_PATH_SEPARATOR '/'
@@ -176,6 +239,11 @@
  * Define if the strlcpy() function exists on the system.
  */
 #define HAVE_STRLCPY 1
+
+/*
+ * Define if the open_memstream() function exists on the system.
+ */
+/* #define HAVE_OPEN_MEMSTREAM 1 */
 
 /*
  * Define if the BSD funopen() function exists on the system.
@@ -216,5 +284,15 @@
  * Define if printf() supports %zd for size_t arguments
  */
 #define HAVE_PRINTF_ZD 1
+
+/*
+ * Define to 1 if <stdlib.h> provides qsort_r() with a BSD style function prototype.
+ */
+#define HAVE_BSD_QSORT_R 1
+
+/*
+ * Define to 1 if <stdlib.h> provides qsort_r() with a GNU style function prototype.
+ */
+#define HAVE_GNU_QSORT_R 0
 
 #endif /*_ANDROID_CONFIG_H*/

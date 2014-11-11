@@ -107,18 +107,16 @@ my_shared_libraries := $(LOCAL_SHARED_LIBRARIES)
 my_cflags := $(LOCAL_CFLAGS)
 my_cppflags := $(LOCAL_CPPFLAGS)
 my_ldflags := $(LOCAL_LDFLAGS)
-my_ldlibs := $(LOCAL_LDLIBS)
 my_asflags := $(LOCAL_ASFLAGS)
 my_cc := $(LOCAL_CC)
 my_cxx := $(LOCAL_CXX)
 my_c_includes := $(LOCAL_C_INCLUDES)
 my_generated_sources := $(LOCAL_GENERATED_SOURCES)
-my_native_coverage := $(LOCAL_NATIVE_COVERAGE)
 
 # MinGW spits out warnings about -fPIC even for -fpie?!) being ignored because
 # all code is position independent, and then those warnings get promoted to
 # errors.
-ifndef USE_MINGW
+ifeq ($(strip $(USE_MINGW)),)
 ifeq ($(LOCAL_MODULE_CLASS),EXECUTABLES)
 my_cflags += -fpie
 else
@@ -135,29 +133,12 @@ my_asflags += $(LOCAL_ASFLAGS_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $
 my_c_includes += $(LOCAL_C_INCLUDES_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_C_INCLUDES_$(my_32_64_bit_suffix))
 my_generated_sources += $(LOCAL_GENERATED_SOURCES_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_GENERATED_SOURCES_$(my_32_64_bit_suffix))
 
-my_clang := $(strip $(LOCAL_CLANG))
+my_clang := $(LOCAL_CLANG)
 ifdef LOCAL_CLANG_$(my_32_64_bit_suffix)
-my_clang := $(strip $(LOCAL_CLANG_$(my_32_64_bit_suffix)))
+my_clang := $(LOCAL_CLANG_$(my_32_64_bit_suffix))
 endif
 ifdef LOCAL_CLANG_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)
-my_clang := $(strip $(LOCAL_CLANG_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)))
-endif
-
-# clang is enabled by default for host builds
-# enable it unless we've specifically disabled clang above
-ifdef LOCAL_IS_HOST_MODULE
-    ifneq ($(HOST_OS),windows)
-    ifeq ($(my_clang),)
-        my_clang := true
-    endif
-    endif
-endif
-
-# Add option to make clang the default for device build
-ifeq ($(USE_CLANG_PLATFORM_BUILD),true)
-    ifeq ($(my_clang),)
-        my_clang := true
-    endif
+my_clang := $(LOCAL_CLANG_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH))
 endif
 
 # arch-specific static libraries go first so that generic ones can depend on them
@@ -166,7 +147,12 @@ my_whole_static_libraries := $(LOCAL_WHOLE_STATIC_LIBRARIES_$($(my_prefix)$(LOCA
 
 my_cflags := $(filter-out $($(LOCAL_2ND_ARCH_VAR_PREFIX)$(my_prefix)GLOBAL_UNSUPPORTED_CFLAGS),$(my_cflags))
 
-include $(BUILD_SYSTEM)/cxx_stl_setup.mk
+
+# Replace libstdc++ with libc++ if it's seen
+my_libcxx := $(filter libc++, $(my_shared_libraries))
+ifdef my_libcxx
+my_system_shared_libraries := $(filter-out libstdc++, $(my_system_shared_libraries))
+endif
 
 # Add static HAL libraries
 ifdef LOCAL_HAL_STATIC_LIBRARIES
@@ -196,6 +182,8 @@ endif
 ifeq (,$(LOCAL_SDK_VERSION)$(LOCAL_IS_HOST_MODULE)$(WITHOUT_LIBCOMPILER_RT))
   my_static_libraries += $(COMPILER_RT_CONFIG_EXTRA_STATIC_LIBRARIES)
 endif
+
+my_compiler_dependencies :=
 
 ####################################################
 ## Add FDO flags if FDO is turned on and supported
@@ -256,38 +244,12 @@ ifeq ($(my_clang),true)
 my_target_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_CFLAGS)
 my_target_global_cppflags += $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_CPPFLAGS)
 my_target_global_ldflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_TARGET_GLOBAL_LDFLAGS)
+my_target_c_includes += $(CLANG_CONFIG_EXTRA_TARGET_C_INCLUDES)
 else
 my_target_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)TARGET_GLOBAL_CFLAGS)
 my_target_global_cppflags += $($(LOCAL_2ND_ARCH_VAR_PREFIX)TARGET_GLOBAL_CPPFLAGS)
 my_target_global_ldflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)TARGET_GLOBAL_LDFLAGS)
 endif # my_clang
-
-# To enable coverage for a given module, set LOCAL_NATIVE_COVERAGE=true and
-# build with NATIVE_COVERAGE=true in your enviornment. Note that the build
-# system is not sensitive to changes to NATIVE_COVERAGE, so you should do a
-# clean build of your module after toggling it.
-ifeq ($(NATIVE_COVERAGE),true)
-    ifeq ($(my_native_coverage),true)
-        # We can't currently generate coverage for clang binaries for two
-        # reasons:
-        #
-        # 1) b/17574078 We currently don't have a prebuilt
-        #    libclang_rt.profile-<ARCH>.a, which clang is hardcoded to link if
-        #    --coverage is passed in the link stage. For now we manually link
-        #    libprofile_rt (which is the name it is built as from
-        #    external/compiler-rt).
-        #
-        # 2) b/17583330 Clang doesn't generate .gcno files when using
-        #    -no-integrated-as. Since most of the assembly in our tree is
-        #    incompatible with clang's assembler, we can't turn off this flag.
-        ifneq ($(my_clang),true)
-            my_cflags += --coverage -O0
-            my_ldflags += --coverage
-        endif
-    endif
-else
-    my_native_coverage := false
-endif
 
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_TARGET_PROJECT_INCLUDES := $(my_target_project_includes)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_TARGET_C_INCLUDES := $(my_target_c_includes)
@@ -301,7 +263,7 @@ ifeq ($(my_clang),true)
 my_host_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_HOST_GLOBAL_CFLAGS)
 my_host_global_cppflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_HOST_GLOBAL_CPPFLAGS)
 my_host_global_ldflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)CLANG_HOST_GLOBAL_LDFLAGS)
-my_host_c_includes := $($(LOCAL_2ND_ARCH_VAR_PREFIX)HOST_C_INCLUDES)
+my_host_c_includes := $($(LOCAL_2ND_ARCH_VAR_PREFIX)HOST_C_INCLUDES) $(CLANG_CONFIG_EXTRA_HOST_C_INCLUDES)
 else
 my_host_global_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)HOST_GLOBAL_CFLAGS)
 my_host_global_cppflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)HOST_GLOBAL_CPPFLAGS)
@@ -336,7 +298,7 @@ else
 endif
 
 ifeq ($(strip $(my_cc)),)
-  ifeq ($(my_clang),true)
+  ifeq ($(strip $(my_clang)),true)
     my_cc := $(CLANG)
   else
     my_cc := $($(LOCAL_2ND_ARCH_VAR_PREFIX)$(my_prefix)CC)
@@ -352,7 +314,7 @@ endif
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_CC := $(my_cc)
 
 ifeq ($(strip $(my_cxx)),)
-  ifeq ($(my_clang),true)
+  ifeq ($(strip $(my_clang)),true)
     my_cxx := $(CLANG_CXX)
   else
     my_cxx := $($(LOCAL_2ND_ARCH_VAR_PREFIX)$(my_prefix)CXX)
@@ -402,7 +364,7 @@ normal_objects_mode := $(if $(LOCAL_ARM_MODE),$(LOCAL_ARM_MODE),thumb)
 # actually used (although they are usually empty).
 arm_objects_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)$(my_prefix)$(arm_objects_mode)_CFLAGS)
 normal_objects_cflags := $($(LOCAL_2ND_ARCH_VAR_PREFIX)$(my_prefix)$(normal_objects_mode)_CFLAGS)
-ifeq ($(my_clang),true)
+ifeq ($(strip $(my_clang)),true)
 arm_objects_cflags := $(call $(LOCAL_2ND_ARCH_VAR_PREFIX)convert-to-$(my_host)clang-flags,$(arm_objects_cflags))
 normal_objects_cflags := $(call $(LOCAL_2ND_ARCH_VAR_PREFIX)convert-to-$(my_host)clang-flags,$(normal_objects_cflags))
 endif
@@ -652,7 +614,8 @@ ifneq ($(strip $(cpp_objects)),)
 $(cpp_objects): $(intermediates)/%.o: \
     $(TOPDIR)$(LOCAL_PATH)/%$(LOCAL_CPP_EXTENSION) \
     $(yacc_cpps) $(proto_generated_headers) \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)cpp-to-o)
 -include $(cpp_objects:%.o=%.P)
 endif
@@ -672,7 +635,8 @@ $(gen_cpp_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
 $(gen_cpp_objects): $(intermediates)/%.o: \
     $(intermediates)/%$(LOCAL_CPP_EXTENSION) $(yacc_cpps) \
     $(proto_generated_headers) \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)cpp-to-o)
 -include $(gen_cpp_objects:%.o=%.P)
 endif
@@ -686,7 +650,8 @@ gen_S_objects := $(gen_S_sources:%.S=%.o)
 
 ifneq ($(strip $(gen_S_sources)),)
 $(gen_S_objects): $(intermediates)/%.o: $(intermediates)/%.S \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)s-to-o)
 -include $(gen_S_objects:%.o=%.P)
 endif
@@ -696,7 +661,8 @@ gen_s_objects := $(gen_s_sources:%.s=%.o)
 
 ifneq ($(strip $(gen_s_objects)),)
 $(gen_s_objects): $(intermediates)/%.o: $(intermediates)/%.s \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)s-to-o-no-deps)
 -include $(gen_s_objects:%.o=%.P)
 endif
@@ -728,7 +694,8 @@ c_objects        := $(c_arm_objects) $(c_normal_objects)
 
 ifneq ($(strip $(c_objects)),)
 $(c_objects): $(intermediates)/%.o: $(TOPDIR)$(LOCAL_PATH)/%.c $(yacc_cpps) $(proto_generated_headers) \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)c-to-o)
 -include $(c_objects:%.o=%.P)
 endif
@@ -746,7 +713,8 @@ ifneq ($(strip $(gen_c_objects)),)
 $(gen_c_objects): PRIVATE_ARM_MODE := $(normal_objects_mode)
 $(gen_c_objects): PRIVATE_ARM_CFLAGS := $(normal_objects_cflags)
 $(gen_c_objects): $(intermediates)/%.o: $(intermediates)/%.c $(yacc_cpps) $(proto_generated_headers) \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)c-to-o)
 -include $(gen_c_objects:%.o=%.P)
 endif
@@ -760,7 +728,8 @@ objc_objects := $(addprefix $(intermediates)/,$(objc_sources:.m=.o))
 
 ifneq ($(strip $(objc_objects)),)
 $(objc_objects): $(intermediates)/%.o: $(TOPDIR)$(LOCAL_PATH)/%.m $(yacc_cpps) $(proto_generated_headers) \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)m-to-o)
 -include $(objc_objects:%.o=%.P)
 endif
@@ -774,7 +743,8 @@ asm_objects_S := $(addprefix $(intermediates)/,$(asm_sources_S:.S=.o))
 
 ifneq ($(strip $(asm_objects_S)),)
 $(asm_objects_S): $(intermediates)/%.o: $(TOPDIR)$(LOCAL_PATH)/%.S \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)s-to-o)
 -include $(asm_objects_S:%.o=%.P)
 endif
@@ -784,7 +754,8 @@ asm_objects_s := $(addprefix $(intermediates)/,$(asm_sources_s:.s=.o))
 
 ifneq ($(strip $(asm_objects_s)),)
 $(asm_objects_s): $(intermediates)/%.o: $(TOPDIR)$(LOCAL_PATH)/%.s \
-    $(LOCAL_ADDITIONAL_DEPENDENCIES)
+    $(LOCAL_ADDITIONAL_DEPENDENCIES) \
+    | $(my_compiler_dependencies)
 	$(transform-$(PRIVATE_HOST)s-to-o-no-deps)
 -include $(asm_objects_s:%.o=%.P)
 endif
@@ -947,14 +918,6 @@ endif
 ###########################################################
 
 ifeq ($(my_clang),true)
-my_cflags += $(LOCAL_CLANG_CFLAGS)
-my_cpplags += $(LOCAL_CLANG_CPPFLAGS)
-my_asflags += $(LOCAL_CLANG_ASFLAGS)
-my_ldflags += $(LOCAL_CLANG_LDFLAGS)
-my_cflags += $(LOCAL_CLANG_CFLAGS_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_CLANG_CFLAGS_$(my_32_64_bit_suffix))
-my_cppflags += $(LOCAL_CLANG_CPPFLAGS_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_CLANG_CPPFLAGS_$(my_32_64_bit_suffix))
-my_ldflags += $(LOCAL_CLANG_LDFLAGS_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_CLANG_LDFLAGS_$(my_32_64_bit_suffix))
-my_asflags += $(LOCAL_CLANG_ASFLAGS_$($(my_prefix)$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)) $(LOCAL_CLANG_ASFLAGS_$(my_32_64_bit_suffix))
 my_cflags := $(call $(LOCAL_2ND_ARCH_VAR_PREFIX)convert-to-$(my_host)clang-flags,$(my_cflags))
 my_cppflags := $(call $(LOCAL_2ND_ARCH_VAR_PREFIX)convert-to-$(my_host)clang-flags,$(my_cppflags))
 my_asflags := $(call $(LOCAL_2ND_ARCH_VAR_PREFIX)convert-to-$(my_host)clang-flags,$(my_asflags))
@@ -971,7 +934,7 @@ $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_DEBUG_CFLAGS := $(debug_cflags)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_C_INCLUDES := $(my_c_includes)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_IMPORT_INCLUDES := $(import_includes)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_LDFLAGS := $(my_ldflags)
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_LDLIBS := $(my_ldlibs)
+$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_LDLIBS := $(LOCAL_LDLIBS)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_NO_CRT := $(strip $(LOCAL_NO_CRT) $(LOCAL_NO_CRT_$(TARGET_$(LOCAL_2ND_ARCH_VAR_PREFIX)ARCH)))
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_LIBCXX := $(my_libcxx)
 

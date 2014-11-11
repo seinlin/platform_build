@@ -26,7 +26,7 @@ ifeq ($(HOST_OS),linux)
 LOCAL_LDLIBS += -lrt
 endif
 
-ifdef USE_MINGW
+ifneq ($(strip $(USE_MINGW)),)
 LOCAL_STATIC_LIBRARIES += libz
 else
 LOCAL_LDLIBS += -lz

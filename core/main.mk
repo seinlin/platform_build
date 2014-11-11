@@ -136,8 +136,24 @@ $(warning ************************************************************)
 $(error Directory names containing spaces not supported)
 endif
 
-# Check for the corrent jdk
-ifeq ($(shell java -version 2>&1 | grep -i openjdk),)
+java_version_str := $(shell unset _JAVA_OPTIONS && java -version 2>&1)
+javac_version_str := $(shell unset _JAVA_OPTIONS && javac -version 2>&1)
+
+# Check for the correct version of java, should be 1.7 by
+# default, and 1.6 if LEGACY_USE_JAVA6 is set.
+ifeq ($(LEGACY_USE_JAVA6),)
+required_version := "1.7.x"
+required_javac_version := "1.7"
+java_version := $(shell echo '$(java_version_str)' | grep '^java .*[ "]1\.7[\. "$$]')
+javac_version := $(shell echo '$(javac_version_str)' | grep '[ "]1\.7[\. "$$]')
+else # if LEGACY_USE_JAVA6
+required_version := "1.6.x"
+required_javac_version := "1.6"
+java_version := $(shell echo '$(java_version_str)' | grep '^java .*[ "]1\.6[\. "$$]')
+javac_version := $(shell echo '$(javac_version_str)' | grep '[ "]1\.6[\. "$$]')
+endif # if LEGACY_USE_JAVA6
+
+ifeq ($(strip $(java_version)),)
 $(info ************************************************************)
 $(info You are attempting to build with the incorrect version)
 $(info of java.)
@@ -151,9 +167,23 @@ $(info ************************************************************)
 $(error stop)
 endif
 
-# Check for the correct version of java
-java_version := $(shell java -version 2>&1 | head -n 1 | grep '^java .*[ "]1\.6[\. "$$]')
-ifeq ($(strip $(java_version)),foo)
+# Check for the current JDK.
+#
+# For Java 1.7, we require OpenJDK on linux and Oracle JDK on Mac OS.
+# For Java 1.6, we require Oracle for all host OSes.
+requires_openjdk := false
+ifeq ($(LEGACY_USE_JAVA6),)
+ifeq ($(HOST_OS), linux)
+requires_openjdk := true
+endif
+endif
+
+
+# Check for the current jdk
+ifeq ($(requires_openjdk), true)
+# The user asked for java7 openjdk, so check that the host
+# java version is really openjdk
+ifeq ($(shell echo '$(java_version_str)' | grep -i openjdk),)
 $(info ************************************************************)
 $(info You asked for an OpenJDK 7 build but your version is)
 $(info $(java_version_str).)
@@ -174,8 +204,7 @@ endif # java version is not Sun Oracle JDK
 endif # if requires_openjdk
 
 # Check for the correct version of javac
-javac_version := $(shell javac -version 2>&1 | head -n 1 | grep '[ "]1\.6[\. "$$]')
-ifeq ($(strip $(javac_version)),foo)
+ifeq ($(strip $(javac_version)),)
 $(info ************************************************************)
 $(info You are attempting to build with the incorrect version)
 $(info of javac.)
@@ -296,6 +325,9 @@ ifneq (,$(user_variant))
   ifeq ($(user_variant),userdebug)
     # Pick up some extra useful tools
     tags_to_install += debug
+
+    # Enable Dalvik lock contention logging for userdebug builds.
+    ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.lockprof.threshold=500
   else
     # Disable debugging in plain user builds.
     enable_target_debugging :=
@@ -329,8 +361,6 @@ endif # !user_variant
 ifeq (true,$(strip $(enable_target_debugging)))
   # Target is more debuggable and adbd is on by default
   ADDITIONAL_DEFAULT_PROPERTIES += ro.debuggable=1
-  # Enable Dalvik lock contention logging.
-  ADDITIONAL_BUILD_PROPERTIES += dalvik.vm.lockprof.threshold=500
   # Include the debugging/testing OTA keys in this build.
   INCLUDE_TEST_OTA_KEYS := true
 else # !enable_target_debugging

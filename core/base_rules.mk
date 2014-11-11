@@ -574,27 +574,27 @@ endif # !LOCAL_UNINSTALLABLE_MODULE
 ###########################################################
 ## CHECK_BUILD goals
 ###########################################################
-my_checked_module :=
+
+ifdef java_alternative_checked_module
+  LOCAL_CHECKED_MODULE := $(java_alternative_checked_module)
+endif
+
 # If nobody has defined a more specific module for the
 # checked modules, use LOCAL_BUILT_MODULE.
-ifdef LOCAL_CHECKED_MODULE
-  my_checked_module := $(LOCAL_CHECKED_MODULE)
-else ifdef java_alternative_checked_module
-  my_checked_module := $(java_alternative_checked_module)
-else
-  my_checked_module := $(LOCAL_BUILT_MODULE)
+ifndef LOCAL_CHECKED_MODULE
+  LOCAL_CHECKED_MODULE := $(LOCAL_BUILT_MODULE)
 endif
 
 # If they request that this module not be checked, then don't.
 # PLEASE DON'T SET THIS.  ANY PLACES THAT SET THIS WITHOUT
 # GOOD REASON WILL HAVE IT REMOVED.
 ifdef LOCAL_DONT_CHECK_MODULE
-  my_checked_module :=
+  LOCAL_CHECKED_MODULE :=
 endif
 # Don't check build target module defined for the 2nd arch
 ifndef LOCAL_IS_HOST_MODULE
 ifdef LOCAL_2ND_ARCH_VAR_PREFIX
-  my_checked_module :=
+  LOCAL_CHECKED_MODULE :=
 endif
 endif
 

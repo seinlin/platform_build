@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 The Android Open-Source Project
+# Copyright (C) 2009 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,14 +19,16 @@
 # build quite specifically for the emulator, and might not be
 # entirely appropriate to inherit from for on-device configurations.
 
-$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/board/generic_arm64/device.mk)
+PRODUCT_PACKAGES := \
+    VoiceDialer
 
-PRODUCT_RUNTIMES := runtime_libart_default
+PRODUCT_PROPERTY_OVERRIDES := \
+    keyguard.no_require_sim=true \
+    ro.com.android.dataroaming=true
 
-include $(SRC_TARGET_DIR)/product/emulator.mk
-PRODUCT_NAME := aosp_arm64
-PRODUCT_DEVICE := generic_arm64
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := AOSP on ARM arm64 Emulator
+PRODUCT_COPY_FILES := \
+    device/generic/goldfish/data/etc/apns-conf.xml:system/etc/apns-conf.xml \
+    frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
+
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/telephony.mk)

@@ -108,10 +108,6 @@ ifneq ($(all_assets),)
 need_compile_asset := true
 endif
 
-ifneq ($(all_assets),)
-need_compile_asset := true
-endif
-
 all_resources := $(strip \
     $(foreach dir, $(LOCAL_RESOURCE_DIR), \
       $(addprefix $(dir)/, \
