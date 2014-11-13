@@ -41,7 +41,6 @@ PRODUCT_PACKAGES += \
     libandroid \
     libandroid_runtime \
     libandroid_servers \
-    libaudioeffect_jni \
     libaudioflinger \
     libaudiopolicyservice \
     libaudiopolicymanager \
@@ -55,10 +54,8 @@ PRODUCT_PACKAGES += \
     libinput \
     libinputflinger \
     libiprouteutil \
-    libjnigraphics \
     libldnhncr \
     libmedia \
-    libmedia_jni \
     libmediaplayerservice \
     libmtp \
     libnetd_client \
@@ -68,7 +65,6 @@ PRODUCT_PACKAGES += \
     libreference-ril \
     libreverbwrapper \
     libril \
-    librtp_jni \
     libsensorservice \
     libskia \
     libsonivox \

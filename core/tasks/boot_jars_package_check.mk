@@ -16,8 +16,8 @@
 # Rules to check if classes in the boot jars are from the whitelisted packages.
 #
 
-ifneq ($(SKIP_BOOT_JARS_CHECK),true)
-ifneq ($(TARGET_BUILD_PDK),true)
+ifneq ($(SKIP_BOOT_JARS_CHECK),)
+ifneq ($(TARGET_BUILD_PDK),)
 ifdef PRODUCT_BOOT_JARS
 
 intermediates := $(call intermediates-dir-for, PACKAGING, boot-jars-package-check,,COMMON)
