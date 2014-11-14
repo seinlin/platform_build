@@ -24,7 +24,6 @@ DISABLED_USER_MODULES := \
 	idmap \
   libc_malloc_debug_leak \
   libc++ \
-  libprocessgroup \
   init \
   libandroid_runtime \
   libandroid \
@@ -35,14 +34,19 @@ DISABLED_USER_MODULES := \
   libfilterpack_imageproc \
   libstagefright_http_support \
   libwilhelm \
-  libOpenMAXAL \
   libOpenSLES \
+  libOpenMAXAL \
+  libopenslestests \
+  BufferQueue_test \
+  slesTest_% \
+  libnative-media-jni \
+  xaVideoDecoderCapabilities \
+  xaplay \
   libdrmclearkeyplugin \
+  ClearKeyDrmUnitTest \
+  zipalign \
+  qcrilmsgtunnel \
 
-#libbacktrace
-#libutils \
-#validatekeymaps
-#libinput \
-#libbinder \
-#validate_framework_keymaps \
-#libnativehelper \
+#libprocessgrou
+#lmkd
+
