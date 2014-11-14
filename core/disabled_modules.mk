@@ -24,7 +24,6 @@ DISABLED_USER_MODULES := \
 	idmap \
   libc_malloc_debug_leak \
   libc++ \
-  init \
   libandroid_runtime \
   libandroid \
   libandroid_servers \
@@ -46,7 +45,4 @@ DISABLED_USER_MODULES := \
   ClearKeyDrmUnitTest \
   zipalign \
   qcrilmsgtunnel \
-
-#libprocessgrou
-#lmkd
 
