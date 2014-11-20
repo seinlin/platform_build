@@ -1,8 +1,6 @@
 my_prefix := TARGET_
 include $(BUILD_SYSTEM)/multilib.mk
 
-LOCAL_CFLAGS += -flax-vector-conversions
-
 ifndef my_module_multilib
 # libraries default to building for both architecturess
 my_module_multilib := both
@@ -29,6 +27,8 @@ LOCAL_MODULE_STEM :=
 LOCAL_BUILT_MODULE_STEM :=
 LOCAL_INSTALLED_MODULE_STEM :=
 LOCAL_INTERMEDIATE_TARGETS :=
+
+LOCAL_CFLAGS += -flax-vector-conversions
 
 include $(BUILD_SYSTEM)/static_library_internal.mk
 

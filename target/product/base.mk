@@ -23,7 +23,6 @@ PRODUCT_PACKAGES += \
     am \
     android.policy \
     android.test.runner \
-    app_process \
     applypatch \
     blkid \
     bmgr \
@@ -38,9 +37,6 @@ PRODUCT_PACKAGES += \
     ime \
     input \
     javax.obex \
-    libandroid \
-    libandroid_runtime \
-    libandroid_servers \
     libaudioflinger \
     libaudiopolicyservice \
     libaudiopolicymanager \
@@ -68,9 +64,6 @@ PRODUCT_PACKAGES += \
     libsensorservice \
     libskia \
     libsonivox \
-    libsoundpool \
-    libsoundtrigger \
-    libsoundtriggerservice \
     libsqlite \
     libstagefright \
     libstagefright_amrnb_common \
