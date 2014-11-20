@@ -23,7 +23,6 @@ DISABLED_USER_MODULES := \
 	bootanimation \
 	idmap \
   libc_malloc_debug_leak \
-  libc++ \
   libandroid_runtime \
   libandroid \
   libandroid_servers \
