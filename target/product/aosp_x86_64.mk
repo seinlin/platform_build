@@ -64,7 +64,6 @@ ifeq (aosp_x86_64,$(TARGET_PRODUCT))
 $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_release.mk)
 endif
 
-
 PRODUCT_NAME := aosp_x86_64
 PRODUCT_DEVICE := generic_x86_64
 PRODUCT_BRAND := Android

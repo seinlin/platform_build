@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014 The Android Open Source Project
+# Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 # limitations under the License.
 #
 
-# Inherit from this product for devices that support 64-bit apps using:
-# $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
-# The inheritance for this must come before the inheritance chain that leads
-# to core_minimal.mk
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_common.mk)
 
-# For now this will allow 64-bit apps, but still compile all apps with JNI
-# for 32-bit only.
+# Enable mainline checking
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
 
-TARGET_SUPPORTS_32_BIT_APPS := true
-TARGET_SUPPORTS_64_BIT_APPS := true
+PRODUCT_NAME := gsi_arm64
+PRODUCT_DEVICE := gsi_arm64
+PRODUCT_BRAND := generic
+PRODUCT_MODEL := GSI on ARM64
