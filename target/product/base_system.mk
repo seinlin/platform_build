@@ -255,7 +255,6 @@ PRODUCT_PACKAGES += \
     snapuserd \
     SoundPicker \
     storaged \
-    surfaceflinger \
     svc \
     task_profiles.json \
     tc \
