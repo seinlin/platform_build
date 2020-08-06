@@ -57,7 +57,7 @@ $(call inherit-product-if-exists, device/generic/goldfish/x86_64-vendor.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulator_vendor.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/board/generic_x86_64/device.mk)
 $(call inherit-product, gonk-misc/b2g.mk)
-$(call inherit-product, external/moztt/fonts.mk)
+$(call inherit-product-if-exists, external/moztt/fonts.mk)
 
 #
 # Special settings for GSI releasing
